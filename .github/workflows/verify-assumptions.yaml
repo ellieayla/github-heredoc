@@ -112,7 +112,7 @@ jobs:
       env:
         value: ${{ steps.test.outputs.foo }}
 
-  multiple:
+  multiple-one-line:
     name: "Assigning multiple values on one line impossible, whole string attached to one variable"
     runs-on: ubuntu-latest
     steps:
