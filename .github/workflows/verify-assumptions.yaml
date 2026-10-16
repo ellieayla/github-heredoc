@@ -59,6 +59,19 @@ jobs:
       env:
         value: ${{ steps.test.outputs.minus }}
 
+  minus-is-literal:
+    name: "Minus: <<-EOF is treated as a literal delimiter"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "minus<<-EOF" | tee -a $GITHUB_OUTPUT
+        echo "some text" | tee -a $GITHUB_OUTPUT
+        echo "-EOF" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ steps.test.outputs.minus }}
+
   expansion:
     name: "Expansion: Shell-like variable expansion is ignored."
     runs-on: ubuntu-latest
