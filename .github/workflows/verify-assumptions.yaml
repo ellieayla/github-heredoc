@@ -185,10 +185,9 @@ jobs:
         echo "foo=1" | tee -a $GITHUB_OUTPUT
         echo "#comment=2" | tee -a $GITHUB_OUTPUT
         echo "bar=3" | tee -a $GITHUB_OUTPUT
-    - run: env
+    - run: echo "$value"
       env:
-        foo: ${{ steps.test.outputs.foo }}
-        bar: ${{ steps.test.outputs.bar }}
+        value: ${{ steps.test.outputs }}
 
   comments-inside-doc:
     name: Comments inside <<DOC
@@ -202,4 +201,4 @@ jobs:
         echo "DOC" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.test.outputs.foo }}
+        value: ${{ steps.test.outputs }}
