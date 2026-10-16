@@ -209,10 +209,9 @@ jobs:
     steps:
     - id: test
       run: |
-        echo "foo==1" | tee -a $GITHUB_OUTPUT
+        echo "foo=1" | tee -a $GITHUB_OUTPUT
         echo "" | tee -a $GITHUB_OUTPUT
-        echo "bar==2" | tee -a $GITHUB_OUTPUT
-
+        echo "bar=2" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ toJSON(steps.test.outputs) }}
