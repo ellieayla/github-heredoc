@@ -237,3 +237,69 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ toJSON(steps.test.outputs) }}
+
+  space-in-key-before-key:
+    name: "Single space inside key: _foo=bar"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo " foo=bar" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
+  space-in-key-before-equal:
+    name: "Single space inside key: foo =bar"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo =bar" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
+  space-in-mid-key:
+    name: "Single space inside key: foo bar=1"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo bar=1" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
+  space-at-start-of-value:
+    name: "Single space inside value: foo= bar"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo= bar" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
+  space-at-end-of-value:
+    name: "Single space inside value: foo=bar "
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo=bar " | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
+  double-equals:
+    name: "Double equals inside key: foo==bar"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo==bar" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
