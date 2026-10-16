@@ -17,7 +17,25 @@ jobs:
       env:
         value: ${{ steps.test.outputs.foo }}
 
-  missing:  # Mising end terminator
+  multiple:  # Basic heredoc works fine
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "1" | tee -a $GITHUB_OUTPUT
+        echo "EOF" | tee -a $GITHUB_OUTPUT
+        echo "bar<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "2" | tee -a $GITHUB_OUTPUT
+        echo "EOF" | tee -a $GITHUB_OUTPUT
+    - run: echo "foo=$foo bar=$bar"
+      env:
+        foo: ${{ steps.test.outputs.foo }}
+        bar: ${{ steps.test.outputs.bar }}
+
+
+  missing:
+    name: "Missing end terminator is an error"
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -28,7 +46,8 @@ jobs:
       env:
         value: ${{ steps.test.outputs.foo }}
 
-  minus:  # <<-EOF to support leading tabs does not work
+  minus:
+    name: "Minus: <<-EOF to support leading tabs inside doc does not work"
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -40,35 +59,35 @@ jobs:
       env:
         value: ${{ steps.test.outputs.minus }}
 
-  expansion:  # Expansion does not work
+  expansion:
+    name: "Expansion: Shell-like variable expansion is ignored."
     runs-on: ubuntu-latest
     steps:
     - id: test
       run: |
         echo "exp<<EOF" | tee -a $GITHUB_OUTPUT
-        echo '\$\n' | tee -a $GITHUB_OUTPUT
-        echo 'pwdenv is "$PWD"' | tee -a $GITHUB_OUTPUT
-        echo 'pwdcmd is `pwd`' | tee -a $GITHUB_OUTPUT
+        echo 'pwd is $PWD' | tee -a $GITHUB_OUTPUT
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.exp }}
 
-  quote:  # Quotes for escaping of contents does not work (no expansion happens)
+  quote:
+    name: "Quotes: Quotes for escaping of contents does not work"
     runs-on: ubuntu-latest
     steps:
     - id: test
       run: |
         echo "quote<<'EOF'" | tee -a $GITHUB_OUTPUT
-        echo '\$\n' | tee -a $GITHUB_OUTPUT
-        echo 'pwdenv is "$PWD"' | tee -a $GITHUB_OUTPUT
+        echo 'pwd is $PWD' | tee -a $GITHUB_OUTPUT
         echo 'pwdcmd is `pwd`' | tee -a $GITHUB_OUTPUT
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.quote }}
 
-  space-after-arrow:  # The redirect and the delimiting identifier do not need to be separated by a space: <<END or << END both work equally well.
+  space-after-arrow:
+    name: "Space before delimiter: Does not support heredoc optional space <<EOF vs << EOF."
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -80,7 +99,8 @@ jobs:
       env:
         value: ${{ steps.test.outputs.space }}
 
-  space-before-arrow:  # Space before the equal character: 'foo <<'
+  space-before-arrow:
+    name: "Space before arrow: Value is dropped"
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -92,7 +112,8 @@ jobs:
       env:
         value: ${{ steps.test.outputs.foo }}
 
-  multiple:  # Multiple per line does nothing, foo contains rest of line
+  multiple:
+    name: "Assigning multiple values on one line impossible, whole string attached to one variable"
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -103,7 +124,8 @@ jobs:
         foo: ${{ steps.test.outputs.foo }}
         bar: ${{ steps.test.outputs.bar }}
 
-  semicolon:  # What does ; in the line do?
+  semicolon:
+    name: "Semicolon is ignored"
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -114,7 +136,8 @@ jobs:
         foo: ${{ steps.test.outputs.foo }}
         bar: ${{ steps.test.outputs.bar }}
 
-  overwite:  # Overwrite works, last value wins
+  overwite:
+    name: "Overwrite: works, last value wins"
     runs-on: ubuntu-latest
     steps:
     - id: test
@@ -126,8 +149,8 @@ jobs:
       env:
         value: ${{ steps.test.outputs.overwrite }}
 
-
-  array:  # Array of values without heredoc doesn't work
+  array:
+    name: Bash array of values unsupported
     runs-on: ubuntu-latest
     steps:
     - id: test
