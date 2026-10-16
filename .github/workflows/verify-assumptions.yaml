@@ -10,7 +10,7 @@ jobs:
     steps:
     - id: test
       run: |
-        echo "foo=<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "foo<<EOF" | tee -a $GITHUB_OUTPUT
         echo "1" | tee -a $GITHUB_OUTPUT
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
@@ -22,7 +22,7 @@ jobs:
     steps:
     - id: test
       run: |
-        echo "foo=<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "foo<<EOF" | tee -a $GITHUB_OUTPUT
         echo "1" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
@@ -33,7 +33,7 @@ jobs:
     steps:
     - id: test
       run: |
-        echo "minus=<<-EOF" | tee -a $GITHUB_OUTPUT
+        echo "minus<<-EOF" | tee -a $GITHUB_OUTPUT
         echo "	a line starting with tab and containing EOF but that's fine" | tee -a $GITHUB_OUTPUT
         echo "	EOF" tee -a $GITHUB_OUTPUT
     - run: echo "$value"
@@ -45,7 +45,7 @@ jobs:
     steps:
     - id: test
       run: |
-        echo "exp=<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "exp<<EOF" | tee -a $GITHUB_OUTPUT
         echo '\$\n' | tee -a $GITHUB_OUTPUT
         echo 'pwdenv is "$PWD"' | tee -a $GITHUB_OUTPUT
         echo 'pwdcmd is `pwd`' | tee -a $GITHUB_OUTPUT
@@ -59,7 +59,7 @@ jobs:
     steps:
     - id: test
       run: |
-        echo "quote=<<'EOF'" | tee -a $GITHUB_OUTPUT
+        echo "quote<<'EOF'" | tee -a $GITHUB_OUTPUT
         echo '\$\n' | tee -a $GITHUB_OUTPUT
         echo 'pwdenv is "$PWD"' | tee -a $GITHUB_OUTPUT
         echo 'pwdcmd is `pwd`' | tee -a $GITHUB_OUTPUT
@@ -68,57 +68,52 @@ jobs:
       env:
         value: ${{ steps.test.outputs.quote }}
 
-  space:  # The redirect and the delimiting identifier do not need to be separated by a space: <<END or << END both work equally well.
+  space-after-arrow:  # The redirect and the delimiting identifier do not need to be separated by a space: <<END or << END both work equally well.
     runs-on: ubuntu-latest
     steps:
     - id: test
       run: |
-        echo "space=<< EOF" | tee -a $GITHUB_OUTPUT
-        echo "nospaceleft" | tee -a $GITHUB_OUTPUT
-        echo "   space in the middle   " | tee -a $GITHUB_OUTPUT
-        echo "nospaceright" | tee -a $GITHUB_OUTPUT
+        echo "space<< EOF" | tee -a $GITHUB_OUTPUT
+        echo "text" | tee -a $GITHUB_OUTPUT
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.space }}
 
-  space-before-equal:  # Space before the equal character: 'foo ='
+  space-before-arrow:  # Space before the equal character: 'foo <<'
     runs-on: ubuntu-latest
     steps:
     - id: test
       run: |
-        echo "foo =<<EOF" | tee -a $GITHUB_OUTPUT
-        echo "1" | tee -a $GITHUB_OUTPUT
+        echo "foo <<EOF" | tee -a $GITHUB_OUTPUT
+        echo "text" | tee -a $GITHUB_OUTPUT
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.foo }}
 
-  multiple:  # Multiple per line?
+  multiple:  # Multiple per line does nothing, foo contains rest of line
     runs-on: ubuntu-latest
     steps:
     - id: test
       run: |
-        echo "foo=1 bar=2 baz=3" | tee -a $GITHUB_OUTPUT
-    - run: echo "foo=$foo bar=$bar baz=$baz"
+        echo "foo=1 bar=2" | tee -a $GITHUB_OUTPUT
+    - run: echo "foo=$foo bar=$bar"
       env:
         foo: ${{ steps.test.outputs.foo }}
         bar: ${{ steps.test.outputs.bar }}
-        baz: ${{ steps.test.outputs.baz }}
 
-  extraspace:  # Extra spaces after = don't work
+  semicolon:  # What does ; in the line do?
     runs-on: ubuntu-latest
     steps:
     - id: test
       run: |
-        echo "space= << EOF" | tee -a $GITHUB_OUTPUT
-        echo "nospaceleft" | tee -a $GITHUB_OUTPUT
-        echo "   space in the middle   " | tee -a $GITHUB_OUTPUT
-        echo "nospaceright" | tee -a $GITHUB_OUTPUT
-        echo "EOF" | tee -a $GITHUB_OUTPUT
-    - run: echo "$value"
+        echo "foo=1;bar=2" | tee -a $GITHUB_OUTPUT
+    - run: echo "foo=$foo bar=$bar"
       env:
-        value: ${{ steps.test.outputs.extraspace }}
+        foo: ${{ steps.test.outputs.foo }}
+        bar: ${{ steps.test.outputs.bar }}
+
 
   overwite:  # Overwrite works, last value wins
     runs-on: ubuntu-latest
@@ -133,7 +128,7 @@ jobs:
         value: ${{ steps.test.outputs.overwrite }}
 
 
-  array:  # Array of values without heredoc
+  array:  # Array of values without heredoc doesn't work
     runs-on: ubuntu-latest
     steps:
     - id: test
