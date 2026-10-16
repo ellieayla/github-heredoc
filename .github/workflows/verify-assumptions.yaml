@@ -9,7 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - id: test
-      run: echo "foo=<<EOF\nbar\nEOF" tee -a $GITHUB_OUTPUT
+      run: |
+        echo "foo=<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "1" | tee -a $GITHUB_OUTPUT
+        echo "EOF" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ steps.test.outputs.foo }}
+
+  missing:  # Mising end terminator
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo=<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "1" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.foo }}
@@ -54,7 +68,6 @@ jobs:
       env:
         value: ${{ steps.test.outputs.quote }}
 
-
   space:  # The redirect and the delimiting identifier do not need to be separated by a space: <<END or << END both work equally well.
     runs-on: ubuntu-latest
     steps:
@@ -68,6 +81,18 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.space }}
+
+  space-before-equal:  # Space before the equal character: 'foo ='
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo =<<EOF" | tee -a $GITHUB_OUTPUT
+        echo "1" | tee -a $GITHUB_OUTPUT
+        echo "EOF" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ steps.test.outputs.foo }}
 
   multiple:  # Multiple per line?
     runs-on: ubuntu-latest
@@ -106,3 +131,17 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.overwrite }}
+
+
+  array:  # Array of values without heredoc
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "arr=(" | tee -a $GITHUB_OUTPUT
+        echo "1" | tee -a $GITHUB_OUTPUT
+        echo "2" | tee -a $GITHUB_OUTPUT
+        echo ")" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ steps.test.outputs.arr }}
