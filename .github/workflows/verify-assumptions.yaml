@@ -21,8 +21,8 @@ jobs:
     - id: minus
       run: |
         echo "minus=<<-EOF" | tee -a $GITHUB_OUTPUT
-        echo "\ta line starting with tab and containing EOF but that's fine" | tee -a $GITHUB_OUTPUT
-        echo "\tEOF" tee -a $GITHUB_OUTPUT
+        echo "	a line starting with tab and containing EOF but that's fine" | tee -a $GITHUB_OUTPUT
+        echo "	EOF" tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.minus.outputs.minus }}
