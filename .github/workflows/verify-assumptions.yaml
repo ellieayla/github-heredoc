@@ -226,3 +226,14 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ toJSON(steps.test.outputs) }}
+
+  single-arrow:
+    name: "Single arrow in key: foo<=bar"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo<=bar" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
