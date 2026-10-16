@@ -133,7 +133,7 @@ jobs:
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.test.outputs.foo }}
+        value: ${{ toJSON(steps.test.outputs) }}
 
   multiple-one-line:
     name: "Assigning multiple values on one line impossible, whole string attached to one variable"
