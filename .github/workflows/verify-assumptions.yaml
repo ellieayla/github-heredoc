@@ -5,31 +5,31 @@ on:
   push:
 
 jobs:
-  heredoc:
+  heredoc:  # Basic heredoc works fine
     runs-on: ubuntu-latest
     steps:
-    - id: foo
+    - id: test
       run: echo "foo=<<EOF\nbar\nEOF" tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.foo.outputs.foo }}
+        value: ${{ steps.test.outputs.foo }}
 
-  minus:
+  minus:  # <<-EOF to support leading tabs does not work
     runs-on: ubuntu-latest
     steps:
-    - id: minus
+    - id: test
       run: |
         echo "minus=<<-EOF" | tee -a $GITHUB_OUTPUT
         echo "	a line starting with tab and containing EOF but that's fine" | tee -a $GITHUB_OUTPUT
         echo "	EOF" tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.minus.outputs.minus }}
+        value: ${{ steps.test.outputs.minus }}
 
-  expansion:
+  expansion:  # Expansion does not work
     runs-on: ubuntu-latest
     steps:
-    - id: expansion
+    - id: test
       run: |
         echo "exp=<<EOF" | tee -a $GITHUB_OUTPUT
         echo '\$\n' | tee -a $GITHUB_OUTPUT
@@ -38,12 +38,12 @@ jobs:
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.expansion.outputs.expansion }}
+        value: ${{ steps.test.outputs.expansion }}
 
-  quote:
+  quote:  # Quotes for escaping of contents does not work (no expansion happens)
     runs-on: ubuntu-latest
     steps:
-    - id: quote
+    - id: test
       run: |
         echo "quote=<<'EOF'" | tee -a $GITHUB_OUTPUT
         echo '\$\n' | tee -a $GITHUB_OUTPUT
@@ -52,12 +52,39 @@ jobs:
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.quote.outputs.quote }}
+        value: ${{ steps.test.outputs.quote }}
 
-  space:
+
+  space:  # The redirect and the delimiting identifier do not need to be separated by a space: <<END or << END both work equally well.
     runs-on: ubuntu-latest
     steps:
-    - id: space
+    - id: test
+      run: |
+        echo "space=<< EOF" | tee -a $GITHUB_OUTPUT
+        echo "nospaceleft" | tee -a $GITHUB_OUTPUT
+        echo "   space in the middle   " | tee -a $GITHUB_OUTPUT
+        echo "nospaceright" | tee -a $GITHUB_OUTPUT
+        echo "EOF" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ steps.test.outputs.space }}
+
+  multiple:  # Multiple per line?
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo=1 bar=2 baz=3" | tee -a $GITHUB_OUTPUT
+    - run: echo "foo=$foo bar=$bar baz=$baz"
+      env:
+        foo: ${{ steps.test.outputs.foo }}
+        bar: ${{ steps.test.outputs.bar }}
+        baz: ${{ steps.test.outputs.baz }}
+
+  extraspace:  # Extra spaces after = don't work
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
       run: |
         echo "space= << EOF" | tee -a $GITHUB_OUTPUT
         echo "nospaceleft" | tee -a $GITHUB_OUTPUT
@@ -66,17 +93,16 @@ jobs:
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.space.outputs.space }}
+        value: ${{ steps.test.outputs.extraspace }}
 
-  overwite:
+  overwite:  # Overwrite works, last value wins
     runs-on: ubuntu-latest
     steps:
-    - id: overwrite
+    - id: test
       run: |
         echo "overwrite=1" | tee -a $GITHUB_OUTPUT
         echo "overwrite=2" | tee -a $GITHUB_OUTPUT
         echo "overwrite=3" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.overwrite.outputs.overwrite }}
-
+        value: ${{ steps.test.outputs.overwrite }}
