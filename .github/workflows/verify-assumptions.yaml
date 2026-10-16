@@ -203,6 +203,20 @@ jobs:
       env:
         value: ${{ toJSON(steps.test.outputs) }}
 
+  blank-lines:
+    name: "Blank lines between items"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo==1" | tee -a $GITHUB_OUTPUT
+        echo "" | tee -a $GITHUB_OUTPUT
+        echo "bar==2" | tee -a $GITHUB_OUTPUT
+
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
   arrows-inside-value:
     name: "Arrows inside the value: foo=value<<with<<arrows"
     runs-on: ubuntu-latest
@@ -303,3 +317,4 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ toJSON(steps.test.outputs) }}
+
