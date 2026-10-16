@@ -202,3 +202,27 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ toJSON(steps.test.outputs) }}
+
+  arrows-inside-value:
+    name: "Arrows inside the value: foo=value<<with<<arrows"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo=value<<with<arrows" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
+
+  value-inside-delimiter:
+    name: "Arrows inside the delimiter: foo<<EOF=DOC"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo<<EOF=DOC" | tee -a $GITHUB_OUTPUT
+        echo "value" | tee -a $GITHUB_OUTPUT
+        echo "EOF=DOC" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
