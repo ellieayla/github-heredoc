@@ -6,18 +6,17 @@ on:
 
 jobs:
   heredoc:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v7
-
     - id: foo
       run: echo "foo=<<EOF\nbar\nEOF" tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
         value: ${{ steps.foo.outputs.foo }}
-    
+
+  minus:
+    runs-on: ubuntu-latest
+    steps:
     - id: minus
       run: |
         echo "minus=<<-EOF" | tee -a $GITHUB_OUTPUT
@@ -27,6 +26,9 @@ jobs:
       env:
         value: ${{ steps.minus.outputs.minus }}
 
+  expansion:
+    runs-on: ubuntu-latest
+    steps:
     - id: expansion
       run: |
         echo "exp=<<EOF" | tee -a $GITHUB_OUTPUT
@@ -38,6 +40,9 @@ jobs:
       env:
         value: ${{ steps.expansion.outputs.expansion }}
 
+  quote:
+    runs-on: ubuntu-latest
+    steps:
     - id: quote
       run: |
         echo "quote=<<'EOF'" | tee -a $GITHUB_OUTPUT
@@ -49,6 +54,9 @@ jobs:
       env:
         value: ${{ steps.quote.outputs.quote }}
 
+  space:
+    runs-on: ubuntu-latest
+    steps:
     - id: space
       run: |
         echo "space= << EOF" | tee -a $GITHUB_OUTPUT
@@ -60,6 +68,9 @@ jobs:
       env:
         value: ${{ steps.space.outputs.space }}
 
+  overwite:
+    runs-on: ubuntu-latest
+    steps:
     - id: overwrite
       run: |
         echo "overwrite=1" | tee -a $GITHUB_OUTPUT
