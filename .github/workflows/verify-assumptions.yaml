@@ -187,7 +187,7 @@ jobs:
         echo "bar=3" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.test.outputs }}
+        value: ${{ toJSON(steps.test.outputs) }}
 
   comments-inside-doc:
     name: Comments inside <<DOC
@@ -201,4 +201,4 @@ jobs:
         echo "DOC" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.test.outputs }}
+        value: ${{ toJSON(steps.test.outputs) }}
