@@ -175,3 +175,31 @@ jobs:
     - run: echo "$value"
       env:
         value: ${{ steps.test.outputs.arr }}
+
+  comments:
+    name: Comments during assignmemnt
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo=1" | tee -a $GITHUB_OUTPUT
+        echo "#comment=2" | tee -a $GITHUB_OUTPUT
+        echo "bar=3" | tee -a $GITHUB_OUTPUT
+    - run: env
+      env:
+        foo: ${{ steps.test.outputs.foo }}
+        bar: ${{ steps.test.outputs.bar }}
+
+  comments-inside-doc:
+    name: Comments inside <<DOC
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo<<DOC" | tee -a $GITHUB_OUTPUT
+        echo "value"
+        echo "#comment=2" | tee -a $GITHUB_OUTPUT
+        echo "DOC" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ steps.test.outputs.foo }}
