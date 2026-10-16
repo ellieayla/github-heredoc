@@ -52,7 +52,7 @@ jobs:
         echo "EOF" | tee -a $GITHUB_OUTPUT
     - run: echo "$value"
       env:
-        value: ${{ steps.test.outputs.expansion }}
+        value: ${{ steps.test.outputs.exp }}
 
   quote:  # Quotes for escaping of contents does not work (no expansion happens)
     runs-on: ubuntu-latest
@@ -113,7 +113,6 @@ jobs:
       env:
         foo: ${{ steps.test.outputs.foo }}
         bar: ${{ steps.test.outputs.bar }}
-
 
   overwite:  # Overwrite works, last value wins
     runs-on: ubuntu-latest
