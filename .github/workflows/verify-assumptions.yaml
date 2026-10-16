@@ -33,6 +33,16 @@ jobs:
         foo: ${{ steps.test.outputs.foo }}
         bar: ${{ steps.test.outputs.bar }}
 
+  bare-string:
+    name: "Just a bare string with no operator"
+    runs-on: ubuntu-latest
+    steps:
+    - id: test
+      run: |
+        echo "foo" | tee -a $GITHUB_OUTPUT
+    - run: echo "$value"
+      env:
+        value: ${{ toJSON(steps.test.outputs) }}
 
   missing:
     name: "Missing end terminator is an error"
